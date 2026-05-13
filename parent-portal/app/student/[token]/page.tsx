@@ -1,5 +1,9 @@
+import { Calendar, ChevronRight } from 'lucide-react';
 import { DefinitionAccordion } from '@/components/student/definition-accordion';
+import { RemainingMotionLines } from '@/components/student/remaining-motion-lines';
+import { TennisRacketIcon } from '@/components/student/tennis-racket-icon';
 import { Button } from '@/components/ui/button';
+import { formatGasUpdatedDisplay } from '@/lib/format-gas-datetime';
 import { fetchStudentPayload } from '@/lib/gas';
 import { resolveStudentAssets } from '@/lib/student-assets';
 
@@ -17,20 +21,13 @@ export default async function StudentPage({ params }: PageProps) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'データ取得に失敗しました';
     return (
-      <main className="kg-page-bg mx-auto flex min-h-dvh max-w-lg flex-col">
-        <header
-          className="shrink-0 bg-kg-forest px-4 pb-4 pt-[max(0.65rem,env(safe-area-inset-top))] text-center text-white shadow-sm"
-          style={{ paddingTop: 'max(0.65rem, env(safe-area-inset-top))' }}
-        >
-          <p className="text-sm font-extrabold">鎌倉グリーンテニススクール</p>
-          <p className="mt-1 text-[10px] font-semibold text-emerald-100/90">育成クラス・振替の残り</p>
-        </header>
-        <div className="flex flex-1 flex-col items-center px-4 py-8 text-center">
-          <p className="w-full max-w-sm rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">{msg}</p>
-          <p className="mt-4 max-w-sm text-xs text-slate-600">
-            管理者向け: Vercel に <code className="rounded bg-white/80 px-1">GAS_STUDENT_API_BASE_URL</code> を設定してください。
-          </p>
-        </div>
+      <main className="kg-page-bg mx-auto flex min-h-dvh max-w-lg flex-col px-3 py-6">
+        <p className="mx-auto w-full max-w-sm rounded-2xl border border-rose-200 bg-white/90 px-4 py-3 text-center text-sm text-rose-900 shadow-sm">
+          {msg}
+        </p>
+        <p className="mx-auto mt-4 max-w-sm text-center text-xs text-slate-600">
+          Vercel に <code className="rounded bg-white/90 px-1">GAS_STUDENT_API_BASE_URL</code> を設定してください。
+        </p>
       </main>
     );
   }
@@ -39,146 +36,160 @@ export default async function StudentPage({ params }: PageProps) {
 
   if (data.error) {
     return (
-      <main className="kg-page-bg mx-auto flex min-h-dvh max-w-lg flex-col">
-        <header
-          className="shrink-0 bg-kg-forest px-4 pb-4 pt-[max(0.65rem,env(safe-area-inset-top))] text-center text-white shadow-sm"
-          style={{ paddingTop: 'max(0.65rem, env(safe-area-inset-top))' }}
-        >
-          <p className="text-sm font-extrabold">鎌倉グリーンテニススクール</p>
-          <p className="mt-1 text-[10px] font-semibold text-emerald-100/90">育成クラス・振替の残り</p>
-        </header>
-        <div className="flex flex-1 flex-col items-center px-4 py-8 text-center">
-          <p className="w-full max-w-sm rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-base font-medium text-amber-950">
-            {data.error}
-          </p>
-          <p className="mt-6 max-w-sm text-sm text-slate-600">お手数ですが、配布のURLから再度お試しください。</p>
-        </div>
+      <main className="kg-page-bg mx-auto flex min-h-dvh max-w-lg flex-col px-3 py-6">
+        <p className="mx-auto w-full max-w-sm rounded-2xl border border-amber-200 bg-white/90 px-4 py-3 text-center text-base font-medium text-amber-950 shadow-sm">
+          {data.error}
+        </p>
+        <p className="mx-auto mt-6 max-w-sm text-center text-sm text-slate-600">配布のURLから再度お試しください。</p>
       </main>
     );
   }
 
+  const updatedLine = formatGasUpdatedDisplay(data.updated);
+  const unitIsKai =
+    data.remainingHasUnit && String(data.remainingSuffix || '').trim() === '回';
+
   return (
-    <main className="kg-page-bg mx-auto flex min-h-dvh w-full max-w-lg flex-col">
-      {/* ブランド帯：文言・ロゴ・マスコットをすべて中央基準で整列 */}
-      <header
-        className="shrink-0 bg-kg-forest px-4 pb-4 pt-[max(0.65rem,env(safe-area-inset-top))] text-center text-white shadow-md"
-        style={{ paddingTop: 'max(0.65rem, env(safe-area-inset-top))' }}
-      >
-        <div className="mx-auto w-full max-w-md">
-          <div className="grid w-full grid-cols-[1fr_auto_1fr] items-end gap-1 px-0.5">
-            <div className="flex min-h-[3.25rem] items-end justify-end pb-0.5">
-              {a.bearLeftUrl ? (
-                <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={a.bearLeftUrl}
-                    alt=""
-                    width={44}
-                    height={52}
-                    className="kg-mascot h-11 w-auto max-w-[2.75rem] object-contain object-bottom opacity-90"
-                    decoding="async"
-                  />
-                </>
-              ) : null}
-            </div>
-
-            <div className="flex min-w-0 flex-col items-center px-1 text-center">
-              {a.logoUrl ? (
-                <div className="mb-1.5 flex h-11 w-11 items-center justify-center rounded-lg bg-white/15 p-1 ring-1 ring-white/25">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={a.logoUrl}
-                    alt=""
-                    width={40}
-                    height={40}
-                    className="h-8 w-8 object-contain"
-                    loading="eager"
-                    decoding="async"
-                  />
-                </div>
-              ) : null}
-              <p className="max-w-[16rem] text-[13px] font-extrabold leading-tight tracking-tight">
-                鎌倉グリーンテニススクール
-              </p>
-              <p className="mt-1 text-[10px] font-semibold tracking-wide text-emerald-100/95">育成クラス・振替の残り</p>
-            </div>
-
-            <div className="flex min-h-[3.25rem] items-end justify-start pb-0.5">
-              {a.bearRightUrl ? (
-                <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={a.bearRightUrl}
-                    alt=""
-                    width={48}
-                    height={56}
-                    className="kg-mascot h-12 w-auto max-w-[3rem] object-contain object-bottom opacity-90 drop-shadow-md"
-                    decoding="async"
-                  />
-                </>
-              ) : null}
-            </div>
+    <main className="kg-page-bg min-h-dvh w-full">
+      <div className="mx-auto max-w-lg px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
+        {/* 題名ブロック：ロゴ左上＋校名横並び、下に「育成クラス振替残数」 */}
+        <section className="mb-3 rounded-2xl bg-white px-4 py-4 shadow-md ring-1 ring-emerald-900/10">
+          <div className="flex flex-row items-center gap-3">
+            {a.logoUrl ? (
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={a.logoUrl}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="h-9 w-9 object-contain"
+                  decoding="async"
+                />
+              </div>
+            ) : (
+              <div className="h-12 w-12 shrink-0 rounded-full bg-emerald-50 ring-1 ring-emerald-100" aria-hidden />
+            )}
+            <p className="min-w-0 flex-1 text-left text-[15px] font-extrabold leading-snug tracking-tight text-emerald-900 sm:text-base">
+              鎌倉グリーンテニススクール
+            </p>
           </div>
+          <h1 className="mt-4 border-t border-emerald-100 pt-3 text-center text-lg font-black tracking-wide text-emerald-950 sm:text-xl">
+            育成クラス振替残数
+          </h1>
+        </section>
 
-          <div className="mt-3 border-t border-white/20 pt-3 text-center">
-            <p className="text-[10px] font-semibold tracking-wider text-emerald-100/85">お名前</p>
-            <p className="mx-auto mt-1 max-w-[18rem] break-words text-lg font-bold leading-snug tracking-tight md:text-xl">
+        {/* 氏名：中央・大きく、左右に大きなマスコット */}
+        <section className="mb-3 flex items-end justify-center gap-0.5 px-0 sm:gap-1">
+          <div className="flex min-h-[7.5rem] w-[min(30%,5.75rem)] flex-1 items-end justify-end sm:min-h-[8.5rem] sm:w-28">
+            {a.bearLeftUrl ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={a.bearLeftUrl}
+                  alt=""
+                  width={112}
+                  height={132}
+                  className="kg-mascot h-[6.5rem] w-auto max-w-full object-contain object-bottom drop-shadow-md sm:h-[7.5rem]"
+                  decoding="async"
+                />
+              </>
+            ) : (
+              <span className="inline-block w-4 shrink-0 sm:w-6" aria-hidden />
+            )}
+          </div>
+          <div className="z-10 flex max-w-[58%] min-w-0 flex-col items-center justify-end px-1 pb-1 text-center">
+            <p className="text-[11px] font-semibold tracking-wide text-emerald-800/90">おなまえ</p>
+            <p className="mt-1.5 break-words text-[1.65rem] font-bold leading-tight tracking-tight text-emerald-950 sm:text-4xl sm:leading-tight">
               {data.name}
             </p>
           </div>
-        </div>
-      </header>
+          <div className="flex min-h-[7.5rem] w-[min(30%,5.75rem)] flex-1 items-end justify-start sm:min-h-[8.5rem] sm:w-28">
+            {a.bearRightUrl ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={a.bearRightUrl}
+                  alt=""
+                  width={120}
+                  height={140}
+                  className="kg-mascot h-[7rem] w-auto max-w-full object-contain object-bottom drop-shadow-md sm:h-[8rem]"
+                  decoding="async"
+                />
+              </>
+            ) : (
+              <span className="inline-block w-4 shrink-0 sm:w-6" aria-hidden />
+            )}
+          </div>
+        </section>
 
-      {/* 白カード：2枚目に近い「更新／残数」の二列＋以降も中央揃え */}
-      <div className="flex min-h-0 flex-1 flex-col px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
-        <div className="mx-auto flex w-full min-w-0 max-w-lg flex-1 flex-col rounded-3xl bg-white p-3 shadow-[0_8px_30px_-8px_rgba(20,83,45,0.18)] ring-1 ring-emerald-900/10">
-          <section className="grid shrink-0 grid-cols-2 divide-x divide-emerald-200/90 rounded-2xl border border-emerald-200/90 bg-gradient-to-b from-slate-50/90 to-emerald-50/50">
-            <div className="flex min-h-[7.5rem] flex-col items-center justify-center gap-1.5 px-2 py-4 text-center">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">最終更新</span>
-              <span className="max-w-full break-words px-0.5 text-sm font-bold tabular-nums leading-snug text-slate-800 sm:text-base">
-                {data.updated}
-              </span>
-            </div>
-            <div className="flex min-h-[7.5rem] flex-col items-center justify-center gap-1.5 px-2 py-4 text-center">
-              <span className="text-xs font-bold text-emerald-800">振替の残り</span>
-              <div className="flex items-baseline justify-center gap-0.5">
-                {data.remainingHasUnit ? (
-                  <>
-                    <span className="text-5xl font-black tabular-nums leading-none text-emerald-600 drop-shadow-sm sm:text-6xl">
-                      {data.remainingMain}
-                    </span>
-                    <span className="pb-0.5 text-xl font-bold leading-none text-emerald-700 sm:text-2xl">
-                      {data.remainingSuffix}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-5xl font-black leading-none text-emerald-600 sm:text-6xl">{data.remainingMain}</span>
-                )}
+        {/* メインカード（メトリクス〜） */}
+        <div className="mx-auto w-full max-w-[22.5rem] overflow-hidden rounded-[1.75rem] bg-white shadow-[0_12px_40px_-12px_rgba(15,118,110,0.35)] ring-1 ring-emerald-900/12">
+          <div className="grid grid-cols-2 divide-x divide-slate-200/90 bg-white">
+            <div className="flex items-center justify-center gap-2.5 px-2 py-5">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-teal-100 ring-1 ring-teal-200/80">
+                <Calendar className="size-5 text-teal-700" strokeWidth={2.25} aria-hidden />
+              </div>
+              <div className="min-w-0 text-left">
+                <p className="text-[11px] font-semibold text-slate-500">更新日時</p>
+                <p className="mt-0.5 text-[13px] font-bold leading-snug text-slate-800">{updatedLine}</p>
               </div>
             </div>
-          </section>
+            <div className="flex flex-col items-center justify-center gap-1.5 px-2 py-4 text-center">
+              <p className="text-xs font-bold text-emerald-700">振替残数</p>
+              {data.remainingHasUnit ? (
+                <div className="flex items-start justify-center gap-1">
+                  <span className="text-5xl font-black leading-none tabular-nums tracking-tight text-teal-600 drop-shadow-sm sm:text-[3.25rem]">
+                    {data.remainingMain}
+                  </span>
+                  <RemainingMotionLines className="pt-1.5" />
+                  {unitIsKai ? (
+                    <span className="mt-1.5 inline-flex h-8 min-w-[1.75rem] items-center justify-center rounded border-2 border-emerald-600 bg-white text-lg font-bold text-emerald-700">
+                      回
+                    </span>
+                  ) : (
+                    <span className="mt-2 text-xl font-bold text-emerald-700">{data.remainingSuffix}</span>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-start justify-center gap-1">
+                  <span className="text-5xl font-black leading-none text-teal-600 sm:text-[3.25rem]">
+                    {data.remainingMain}
+                  </span>
+                  <RemainingMotionLines className="pt-1.5" />
+                </div>
+              )}
+            </div>
+          </div>
 
-          {data.definitionHtml ? <DefinitionAccordion html={data.definitionHtml} /> : null}
+          <div className="bg-white px-2 pb-2 pt-1">
+            {data.definitionHtml ? <DefinitionAccordion html={data.definitionHtml} /> : null}
 
-          <div className="mt-auto flex shrink-0 flex-col items-center gap-2.5 pt-4 text-center">
-            <p className="max-w-sm text-sm leading-relaxed text-slate-600">空き枠は予約ページでご確認ください</p>
-            {data.reservationUrl ? (
-              <Button variant="reservation" asChild className="w-full max-w-sm">
-                <a href={data.reservationUrl} target="_blank" rel="noopener noreferrer">
-                  <span aria-hidden>🎾</span>
-                  振替を予約する
-                </a>
-              </Button>
-            ) : (
-              <p className="w-full max-w-sm rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-base font-medium text-amber-950">
-                予約ページ未設定です。スクールまでお問い合わせください。
-              </p>
-            )}
-            <p className="max-w-[20rem] text-xs leading-relaxed text-slate-500">
-              ※このURLはご家庭内でのご利用を想定しています
-            </p>
+            <div className="mt-5 flex flex-col items-center gap-3 px-1 pb-4">
+              {data.reservationUrl ? (
+                <Button variant="reservation" asChild className="w-full max-w-[19rem]">
+                  <a href={data.reservationUrl} target="_blank" rel="noopener noreferrer">
+                    <span className="flex w-full items-center justify-between gap-2">
+                      <TennisRacketIcon className="size-6 shrink-0 text-white drop-shadow" />
+                      <span className="flex-1 text-center text-[15px] font-bold text-neutral-900">
+                        振替予約はこちら
+                      </span>
+                      <ChevronRight className="size-5 shrink-0 text-neutral-900" strokeWidth={2.5} aria-hidden />
+                    </span>
+                  </a>
+                </Button>
+              ) : (
+                <p className="w-full max-w-[19rem] rounded-full border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm font-medium text-amber-950">
+                  予約ページ未設定です
+                </p>
+              )}
+            </div>
           </div>
         </div>
+
+        <p className="mx-auto mt-4 max-w-[19rem] px-2 text-center text-[11px] leading-relaxed text-slate-500">
+          ※このURLはご家庭内のみでご利用ください
+        </p>
       </div>
     </main>
   );

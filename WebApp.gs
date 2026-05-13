@@ -180,12 +180,12 @@ function resolveReservationUrl_() {
   return CONFIG.DEFAULT_RESERVATION_URL;
 }
 
-/** 振替残数の定義（HTML。<?!= ?> 用・静的文言のみ） */
+/** 振替残数の定義（HTML。format=json 用・改行付き・左揃え想定） */
 function getMakeupDefinitionHtml_() {
   return (
-    '<p class="mb-1.5 last:mb-0">レギュラーレッスンを欠席or雨天等でレッスンが中止になった場合は<span class="whitespace-nowrap">振替</span>がたまります。</p>' +
-    '<p class="mb-1.5 last:mb-0"><span class="whitespace-nowrap">振替予約</span>した日に出席した時点で残数が<span class="whitespace-nowrap">1つ</span>減ります。</p>' +
-    '<p class="mb-0">→予約しただけでは減りません。</p>'
+    '<p class="mb-3 leading-relaxed">レギュラーレッスンを欠席した場合、<br>または雨天などでレッスンが中止になった場合に、<br>振替がたまります。</p>' +
+    '<p class="mb-3 leading-relaxed">振替予約した日に<strong>出席した時点</strong>で、<br>残数が<span class="whitespace-nowrap">1つ</span>減ります。</p>' +
+    '<p class="mb-0 leading-relaxed font-medium text-emerald-900">※ 予約しただけでは減りません。<br>必ずレッスンへ出席してください。</p>'
   );
 }
 

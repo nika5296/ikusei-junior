@@ -9,7 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         reservation:
-          'min-h-[3.25rem] w-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-amber-950 shadow-md ring-2 ring-amber-200/80 hover:from-amber-300 hover:via-amber-200 hover:to-yellow-200',
+          'min-h-[3.35rem] w-full rounded-full border-2 border-yellow-300 bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-300 px-5 py-3.5 text-base font-bold text-neutral-900 shadow-md hover:from-orange-300 hover:via-amber-300 hover:to-yellow-200',
         ghost: 'shadow-none ring-0 hover:bg-accent'
       },
       size: {
