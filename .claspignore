@@ -1,0 +1,12 @@
+*.gs
+**/*.gs
+**/node_modules/**
+parent-portal/**
+data/**
+surge/**
+tools/**
+*.md
+**/*.md
+*.xlsx
+*.json
+!appsscript.json

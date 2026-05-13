@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.definition-html p {
+  margin-bottom: 0.4rem;
+}
+.definition-html p:last-child {
+  margin-bottom: 0;
+}

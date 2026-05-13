@@ -1,0 +1,269 @@
+/**
+ * 鎌倉グリーンテニススクール — 育成クラス 振替残数（保護者向け）
+ * HP: https://www.kamakura-green-tennis.com/ のグリーン系トーンに合わせています
+ */
+
+:root {
+  /* ロゴ・サイトに近いフォレスト＆ライム */
+  --kg-forest: #1b4332;
+  --kg-forest-mid: #2d6a4f;
+  --kg-leaf: #40916c;
+  --kg-lime: #74c69d;
+  --kg-cream: #f4fbf7;
+  --kg-white: #ffffff;
+  --kg-muted: #5c6f68;
+  --kg-border: #d8ebe2;
+  --kg-error-bg: #fef2f2;
+  --kg-error-border: #fecaca;
+  --kg-error-text: #991b1b;
+  --kg-warn-bg: #fffbeb;
+  --kg-warn-border: #fde68a;
+  --kg-warn-text: #92400e;
+  --shadow-card: 0 2px 12px rgba(27, 67, 50, 0.08);
+  --radius: 1rem;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body.page {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  background: linear-gradient(180deg, var(--kg-cream) 0%, #eef6f1 100%);
+  color: var(--kg-forest);
+  line-height: 1.45;
+}
+
+.container {
+  max-width: 22rem;
+  margin-left: auto;
+  margin-right: auto;
+  /* 上部でロゴの影・星が切れないよう余白（ノッチ対応） */
+  padding: max(1rem, env(safe-area-inset-top, 0px)) 1rem 2.5rem;
+}
+
+/* 左上：ロゴ + スクール名 */
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--kg-border);
+  overflow: visible;
+}
+
+/* ロゴ周りに余白を取り、box-shadow が上で切れないようにする */
+.brand-logo-wrap {
+  flex-shrink: 0;
+  padding: 6px 2px 2px;
+  line-height: 0;
+  overflow: visible;
+}
+
+.brand-logo {
+  display: block;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  /* 画像は円形PNGのため追加の border-radius は付けない（上端が欠ける原因になることがある） */
+  box-shadow: 0 1px 4px rgba(27, 67, 50, 0.12);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.brand-name {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--kg-forest);
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+}
+
+.brand-sub {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--kg-forest-mid);
+  letter-spacing: 0.06em;
+}
+
+.alert {
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+}
+
+.alert--error {
+  border: 1px solid var(--kg-error-border);
+  background: var(--kg-error-bg);
+  color: var(--kg-error-text);
+}
+
+.card {
+  border-radius: var(--radius);
+  background: var(--kg-white);
+  border: 1px solid var(--kg-border);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem 1.125rem;
+}
+
+.card > * + * {
+  margin-top: 1.1rem;
+}
+
+.field-label {
+  margin: 0;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--kg-muted);
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+
+.field-label--spaced {
+  margin-bottom: 0.2rem;
+}
+
+.student-name {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--kg-forest);
+  letter-spacing: 0.02em;
+}
+
+.stats-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.remaining-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.remaining-value {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--kg-leaf);
+  line-height: 1.1;
+}
+
+.meta-block {
+  text-align: right;
+  font-size: 0.65rem;
+  color: #8aa399;
+}
+
+.meta-block p {
+  margin: 0;
+}
+
+.meta-block .meta-value {
+  color: var(--kg-muted);
+  font-weight: 500;
+}
+
+.note-text {
+  margin: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--kg-border);
+  font-size: 0.7rem;
+  color: var(--kg-muted);
+  line-height: 1.55;
+}
+
+/* 振替残数の定義 */
+.definition-box {
+  margin: 0;
+  padding: 0.75rem 0.7rem;
+  background: var(--kg-cream);
+  border: 1px solid var(--kg-border);
+  border-radius: 0.65rem;
+}
+
+.definition-heading {
+  margin: 0 0 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--kg-forest-mid);
+  letter-spacing: 0.02em;
+}
+
+.definition-text {
+  margin: 0;
+  font-size: 0.68rem;
+  color: var(--kg-muted);
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(180deg, var(--kg-forest-mid) 0%, var(--kg-forest) 100%);
+  box-shadow: 0 2px 8px rgba(27, 67, 50, 0.2);
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+  filter: brightness(1.06);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.warn-box {
+  margin: 0;
+  font-size: 0.7rem;
+  color: var(--kg-warn-text);
+  background: var(--kg-warn-bg);
+  border: 1px solid var(--kg-warn-border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.65rem;
+}
+
+.fine-print {
+  margin: 0;
+  font-size: 0.625rem;
+  color: #9cb0a8;
+  line-height: 1.5;
+}
+
+.site-footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.6rem;
+  color: #a3b8af;
+  letter-spacing: 0.02em;
+}

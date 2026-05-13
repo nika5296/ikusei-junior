@@ -1,0 +1,8 @@
+{
+  "name": "育成クラス出欠名簿",
+  "private": true,
+  "description": "Surge へ静的ファイルを上げるとき用（npx で surge を実行）",
+  "scripts": {
+    "surge:deploy": "npx surge ./surge kamakura-green-ikusei.surge.sh"
+  }
+}

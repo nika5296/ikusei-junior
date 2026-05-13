@@ -1,0 +1,17 @@
+.clasp.demo.json
+.clasp.demo.deployment.json
+.clasp.json.__parent_backup__
+
+# 依存・ビルド・環境
+node_modules/
+**/node_modules/
+parent-portal/.next/
+parent-portal/.vercel/
+.env
+.env.local
+parent-portal/.env.local
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

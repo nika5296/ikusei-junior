@@ -1,0 +1,32 @@
+# parent-portal を Vercel にデプロイ（初回のみ GitHub の Secrets を設定）
+# 参考: https://vercel.com/kb/guide/how-can-i-use-github-actions-with-vercel
+name: Deploy parent-portal to Vercel
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'parent-portal/**'
+      - '.github/workflows/vercel-parent-portal.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: vercel-parent-portal-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v42
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-build: true
+          vercel-args: '--prod'
+          working-directory: parent-portal

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#14532d" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              kg: { forest: '#14532d', leaf: '#15803d', mint: '#ecfdf5', cream: '#fffbeb' }
+            },
+            boxShadow: {
+              pop: '0 10px 40px -10px rgba(20,83,45,0.25), 0 4px 12px rgba(20,83,45,0.12)',
+              sheet: '0 -12px 40px -8px rgba(15, 80, 50, 0.18)'
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+
+      details > summary { list-style: none; }
+      details > summary::-webkit-details-marker { display: none; }
+
+      @keyframes kg-float     { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-10px) rotate(1.5deg)} }
+      @keyframes kg-float-alt { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-10px) rotate(-1.5deg)} }
+      .mascot-l { animation: kg-float     2.8s ease-in-out infinite; }
+      .mascot-r { animation: kg-float-alt 2.8s ease-in-out 0.2s infinite; }
+      @media (prefers-reduced-motion: reduce) { .mascot-l, .mascot-r { animation: none; } }
+
+      .definition-panel-inner { word-break: keep-all; line-break: strict; overflow-wrap: break-word; }
+
+      /* モバイル：定義を開いたときはパネル内だけスクロール（外側は一画面のまま） */
+      .kg-mobile-def-body {
+        max-height: min(36vh, 14rem);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .pt-safe  { padding-top:    max(0.65rem, env(safe-area-inset-top)); }
+      .pb-safe  { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+
+      /* 8px グリッド感の余白トークン（モバイル） */
+      .kg-mobile-metric-card {
+        border-radius: 1rem;
+        border: 1px solid rgb(209 250 229 / 0.9);
+        background: linear-gradient(180deg, rgb(248 250 252) 0%, rgb(236 253 245 / 0.65) 100%);
+      }
+
+      /**
+       * レイアウト幅が広く取られている端末（viewport 不整合など）でも、
+       * スマホ実機ならモバイル用 UI を優先する（Tailwind sm: の補完）
+       */
+      body.kg-force-mobile .kg-mobile-only { display: flex !important; }
+      body.kg-force-mobile .kg-desktop-only { display: none !important; }
+    </style>
+    <title>鎌倉グリーン｜振替残数</title>
+  </head>
+
+  <body class="m-0 min-h-screen bg-white font-sans text-slate-800 antialiased">
+
+    <!-- ═══════════════════════════════════════════════════════
+         モバイル専用 UI
+         ・プロレビュー反映: 上段の視覚重量を抑え、残数を1カードに集約
+         ・GASバナー高さは取りにくいため、ヘッダーは極力フラットに
+         ═══════════════════════════════════════════════════════ -->
+    <div
+      class="kg-mobile-only flex h-[100dvh] max-h-[100dvh] min-h-0 w-full max-w-full flex-col overflow-hidden bg-slate-100 sm:hidden"
+      id="kg-layout-mobile"
+    >
+      <!-- ブランド帯（圧縮）：氏名は緑上で中サイズ＝白カードの重さを解消 -->
+      <div
+        class="relative isolate shrink-0 bg-gradient-to-r from-emerald-900 via-emerald-700 to-teal-700 px-3 pb-3 pt-safe shadow-sm"
+      >
+        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_100%_80%_at_100%_0%,rgba(255,255,255,0.08),transparent_50%)]" aria-hidden="true"></div>
+
+        <div class="relative z-10 flex items-start gap-2.5">
+          <div
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/15 p-1 ring-1 ring-white/25"
+          >
+            <img src="<?= logoUrl ?>" width="40" height="40" class="h-7 w-7 object-contain" alt="" loading="eager" decoding="async" />
+          </div>
+          <div class="min-w-0 flex-1 pt-0.5">
+            <p class="truncate text-[13px] font-extrabold leading-tight text-white">鎌倉グリーンテニススクール</p>
+            <p class="mt-0.5 text-[10px] font-semibold tracking-wide text-emerald-100/90">育成クラス・振替の残り</p>
+          </div>
+          <img
+            src="<?= bearRightUrl ?>"
+            width="48"
+            height="68"
+            class="mascot-r pointer-events-none h-12 w-auto shrink-0 opacity-80 drop-shadow-md"
+            alt=""
+            aria-hidden="true"
+          />
+        </div>
+
+        <div class="relative z-10 mt-2 border-t border-white/15 pt-2">
+          <? if (data.error) { ?>
+          <p class="text-center text-[13px] font-semibold leading-snug text-amber-100"><?= data.error ?></p>
+          <? } else { ?>
+          <p class="text-[10px] font-semibold uppercase tracking-wider text-emerald-100/80">お名前</p>
+          <p class="mt-0.5 break-words text-[1.05rem] font-bold leading-snug text-white drop-shadow-sm"><?= data.name ?></p>
+          <? } ?>
+        </div>
+      </div>
+
+      <? if (!data.error) { ?>
+      <div
+        class="relative z-20 flex min-h-0 flex-1 flex-col overflow-hidden rounded-t-2xl bg-white px-3 pt-3 shadow-[0_-6px_24px_-6px_rgba(6,78,59,0.12)] ring-1 ring-slate-200/60"
+      >
+        <div class="mx-auto flex min-h-0 w-full max-w-lg flex-1 flex-col gap-2">
+          <!-- メトリック帯：最終更新＋残数を1ブロックに（余白の「穴」を解消） -->
+          <div class="kg-mobile-metric-card shrink-0 px-3 py-3 shadow-sm">
+            <p class="text-center text-[10px] font-semibold leading-tight text-slate-500">
+              最終更新
+              <span class="ml-1.5 tabular-nums text-slate-700"><?= data.updated ?></span>
+            </p>
+            <div class="my-2.5 h-px w-full bg-emerald-100/90" role="presentation"></div>
+            <p class="text-center text-[11px] font-bold text-emerald-800">振替の残り</p>
+            <div class="mt-1.5 flex items-baseline justify-center gap-0.5">
+              <? if (data.remainingHasUnit) { ?>
+              <span class="text-[clamp(3rem,13vw,4.25rem)] font-black tabular-nums leading-none text-emerald-600">
+                <?= data.remainingMain ?>
+              </span>
+              <span class="pb-0.5 text-lg font-bold leading-none text-emerald-600"><?= data.remainingSuffix ?></span>
+              <? } else { ?>
+              <span class="text-[clamp(2.35rem,10vw,3.25rem)] font-black leading-none text-emerald-600"><?= data.remainingMain ?></span>
+              <? } ?>
+            </div>
+          </div>
+
+          <? if (data.definitionHtml) { ?>
+          <div class="shrink-0">
+            <details class="group overflow-hidden rounded-xl border border-slate-200 bg-slate-50/90">
+              <summary
+                class="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2.5 text-left active:bg-slate-100/90"
+                title="「振替の残り」のカウント方法を表示します"
+              >
+                <span class="text-[11px] font-bold leading-snug text-emerald-900">詳しい説明（タップで開く）</span>
+                <span class="shrink-0 text-sm font-bold text-emerald-600 transition-transform duration-200 group-open:rotate-180">▼</span>
+              </summary>
+              <div
+                class="definition-panel-inner kg-mobile-def-body border-t border-slate-200/80 px-3 pb-2 pt-2 text-[11px] font-medium leading-relaxed text-slate-700"
+              >
+                <?!= data.definitionHtml ?>
+              </div>
+            </details>
+          </div>
+          <? } ?>
+
+          <!-- プライマリ CTA：1画面1主ボタン。補足1行でアコーディオンと優先度を分離 -->
+          <div class="mt-auto shrink-0 space-y-2 pb-safe pt-1">
+            <? if (data.reservationUrl) { ?>
+            <p class="text-center text-[10px] text-slate-500">空き枠は予約ページでご確認ください</p>
+            <a
+              href="<?= data.reservationUrl ?>"
+              class="flex min-h-[3rem] w-full items-center justify-center rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 text-center text-[15px] font-black tracking-tight text-amber-950 shadow-md ring-2 ring-amber-200/75 active:scale-[0.99]"
+            >
+              🎾 振替を予約する
+            </a>
+            <? } else { ?>
+            <p class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-center text-xs font-medium text-amber-950">
+              予約ページ未設定です。スクールまでお問い合わせください。
+            </p>
+            <? } ?>
+            <p class="text-left text-[10px] leading-snug text-slate-400">※このURLはご家庭内でのご利用を想定しています</p>
+          </div>
+        </div>
+      </div>
+      <? } else { ?>
+      <div class="flex flex-1 flex-col items-center justify-center gap-2 px-6 pb-safe pt-4 text-center text-sm text-slate-500">
+        <p>お手数ですが、配布のURLから再度お試しください。</p>
+      </div>
+      <? } ?>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PC 専用 UI（理想に近いカード + 左右マスコット）
+         ═══════════════════════════════════════════════════════ -->
+    <div class="kg-desktop-only hidden min-h-screen w-full sm:flex" id="kg-layout-desktop">
+      <div
+        class="mx-auto flex min-h-screen w-full max-w-3xl items-start justify-center gap-4 bg-gradient-to-b from-emerald-50/95 via-white to-amber-50/50 px-5 py-12 md:gap-6 md:px-8"
+      >
+        <div class="flex w-[5.5rem] shrink-0 flex-col items-center pt-8 md:w-32">
+          <img
+            src="<?= bearLeftUrl ?>"
+            width="112"
+            height="160"
+            class="mascot-l pointer-events-none h-auto w-full max-w-[7.5rem] select-none object-contain drop-shadow-xl"
+            alt="鎌倉グリーンベア"
+          />
+        </div>
+
+        <div class="w-full min-w-0 max-w-md flex-1 space-y-5">
+          <header
+            class="flex items-center gap-3 rounded-2xl border-2 border-emerald-100/90 bg-white px-4 py-3.5 shadow-sm backdrop-blur-sm"
+          >
+            <div
+              class="flex h-[3.25rem] w-[3.25rem] shrink-0 items-center justify-center rounded-full bg-white p-1.5 shadow-md ring-2 ring-emerald-100"
+            >
+              <img
+                src="<?= logoUrl ?>"
+                width="48"
+                height="48"
+                class="max-h-[2.35rem] max-w-[2.35rem] object-contain object-center"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-extrabold leading-tight text-emerald-950">鎌倉グリーンテニススクール</p>
+              <p class="mt-0.5 text-[11px] font-bold tracking-wide text-emerald-600">育成クラス・振替残数</p>
+            </div>
+          </header>
+
+          <? if (data.error) { ?>
+          <div
+            class="rounded-2xl border-2 border-rose-200 bg-rose-50 px-5 py-4 text-center text-sm font-semibold leading-relaxed text-rose-800 shadow-pop"
+          >
+            <?= data.error ?>
+          </div>
+          <? } else { ?>
+
+          <section
+            class="overflow-hidden rounded-[1.85rem] border-2 border-emerald-200/85 bg-white shadow-pop ring-1 ring-emerald-900/[0.04]"
+          >
+            <div class="bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500 px-6 pb-6 pt-7 text-white">
+              <p class="text-xs font-bold tracking-[0.12em] text-emerald-100/95">お名前</p>
+              <p class="mt-2.5 break-words text-3xl font-black leading-tight tracking-tight drop-shadow-sm md:text-4xl">
+                <?= data.name ?>
+              </p>
+            </div>
+            <div class="w-full px-6 pb-6 pt-6 text-center">
+              <p class="text-[11px] font-bold text-slate-500">最終更新</p>
+              <p class="mt-1 text-sm font-semibold tabular-nums tracking-tight text-slate-600"><?= data.updated ?></p>
+              <p class="mt-7 text-xs font-bold text-emerald-800">振替の残り</p>
+              <div class="mt-2.5 flex items-baseline justify-center gap-0.5">
+                <? if (data.remainingHasUnit) { ?>
+                <span class="text-5xl font-black tabular-nums leading-none text-emerald-600 drop-shadow-sm md:text-6xl"
+                  ><?= data.remainingMain ?></span
+                >
+                <span class="pb-0.5 text-lg font-bold leading-none text-emerald-600 md:text-2xl"><?= data.remainingSuffix ?></span>
+                <? } else { ?>
+                <span class="text-3xl font-black leading-none text-emerald-600 md:text-4xl"><?= data.remainingMain ?></span>
+                <? } ?>
+              </div>
+            </div>
+            <? if (data.definitionHtml) { ?>
+            <div class="border-t border-emerald-100 px-5 pb-5 pt-2">
+              <details class="group rounded-2xl border-2 border-dashed border-emerald-200 bg-emerald-50/80">
+                <summary
+                  class="flex cursor-pointer list-none items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-emerald-900 transition hover:bg-emerald-100/60"
+                >
+                  <span>「振替の残り」の意味（クリックで表示）</span>
+                  <span class="text-lg text-emerald-500 transition-transform duration-200 group-open:rotate-180">▼</span>
+                </summary>
+                <div
+                  class="definition-panel-inner border-t border-emerald-100/80 px-3 pb-2.5 pt-1.5 text-xs font-medium leading-relaxed text-emerald-900/80"
+                >
+                  <?!= data.definitionHtml ?>
+                </div>
+              </details>
+            </div>
+            <? } ?>
+            <div class="space-y-3 border-t border-emerald-100 px-6 pb-6 pt-4">
+              <? if (data.reservationUrl) { ?>
+              <a
+                href="<?= data.reservationUrl ?>"
+                class="block w-full rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 py-4 text-center text-base font-black text-amber-950 shadow-lg ring-2 ring-amber-200/85 transition hover:scale-[1.02] hover:brightness-105 active:scale-[0.98]"
+              >
+                🎾 振替を予約する
+              </a>
+              <? } else { ?>
+              <p class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-center text-xs font-medium text-amber-900">
+                予約ページ未設定です。スクールまでお問い合わせください。
+              </p>
+              <? } ?>
+              <p class="text-center text-[10px] text-slate-400">※このURLはご家庭内でのご利用を想定しています</p>
+            </div>
+          </section>
+
+          <? } ?>
+
+        </div>
+
+        <div class="flex w-[5.5rem] shrink-0 flex-col items-center pt-8 md:w-32">
+          <img
+            src="<?= bearRightUrl ?>"
+            width="112"
+            height="160"
+            class="mascot-r pointer-events-none h-auto w-full max-w-[7.5rem] select-none object-contain drop-shadow-xl"
+            alt="鎌倉グリーンベア"
+          />
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        function compactScreen() {
+          var w = window.screen && window.screen.width ? window.screen.width : 0;
+          var h = window.screen && window.screen.height ? window.screen.height : 0;
+          return w > 0 && h > 0 ? Math.min(w, h) : 0;
+        }
+        function shouldForceMobile() {
+          var narrow = window.innerWidth < 640;
+          var touch = (navigator.maxTouchPoints || 0) > 0 || 'ontouchstart' in window;
+          var sw = compactScreen();
+          /* おおむねスマホ縦横（小型タブレットは除外しがちだが、未設定 viewport 対策を優先） */
+          var phoneLike = sw > 0 && sw <= 560;
+          return narrow || (touch && phoneLike);
+        }
+        function apply() {
+          document.body.classList.toggle('kg-force-mobile', shouldForceMobile());
+        }
+        apply();
+        window.addEventListener('resize', apply);
+        window.addEventListener('orientationchange', function () {
+          setTimeout(apply, 250);
+        });
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener('resize', apply);
+        }
+      })();
+    </script>
+  </body>
+</html>
