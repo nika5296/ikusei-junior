@@ -389,13 +389,31 @@ function exportStudentUrls_() {
   }
 }
 
+/**
+ * 設定シートの「保護者ポータルURL」に CONFIG.DEFAULT_PARENT_PORTAL_BASE_URL を書き込み、URLリストを再出力する。
+ */
+function registerDefaultParentPortalUrlAndExportUrls_() {
+  var raw = String(CONFIG.DEFAULT_PARENT_PORTAL_BASE_URL || '').trim();
+  var base = raw.replace(/\/+$/, '');
+  if (!base) {
+    SpreadsheetApp.getUi().alert(
+      'CONFIG.DEFAULT_PARENT_PORTAL_BASE_URL が空です。\n\n' +
+        'Config で本番の https://（あなた）.vercel.app を設定して clasp push するか、' +
+        '設定シートの「保護者ポータルURL」を手入力してから「生徒ごとのURLを…出力」を実行してください。'
+    );
+    return;
+  }
+  setSettingValue_(CONFIG.SETTINGS_KEYS.PARENT_PORTAL_BASE_URL, base);
+  exportStudentUrls_();
+}
+
 /** メニュー互換名（旧 getUrl 依存はやめる） */
 function syncDeployedWebAppUrlToSettingsSheet_() {
   registerCanonicalWebAppExecUrl_();
 }
 
 /**
- * 方式Bまとめ: canonical exec があれば URLリスト出力（無ければ登録メニューへ誘導）
+ * exec が登録済みなら URL リスト出力（未登録なら初期設定メニューへ誘導）。メニューからは外しているがエディタ実行用に残す。
  */
 function runDemoVariantSetup_syncUrlAndExportUrls_() {
   var url = resolveWebAppBaseUrl_();
@@ -403,8 +421,8 @@ function runDemoVariantSetup_syncUrlAndExportUrls_() {
     SpreadsheetApp.getUi().alert(
       'Web アプリの exec URL が未登録です。\n\n' +
         '1. clasp-demo.ps1 -Deploy の出力で …/exec をコピー\n' +
-        '2. メニュー「方式B: デプロイURLを設定シートに書く」（exec を貼る）で登録\n' +
-        '3. もう一度このメニューを実行'
+        '2. メニュー「⚙️ 初期設定・管理」→「GASのWebアプリURL（…/exec）を設定シートに登録」で貼り付け\n' +
+        '3. 「URLリストを出力（設定の保護者ポータルURLどおり）」を実行'
     );
     return;
   }
@@ -419,7 +437,7 @@ function repairUrlListBaseUrlToCurrentDeploy_() {
   var base = resolveWebAppBaseUrl_();
   if (!base) {
     SpreadsheetApp.getUi().alert(
-      'exec のベース URL が未定義です。\n\n「方式B: デプロイURLを設定シートに書く」で clasp の …/exec を貼って登録してから再実行してください。'
+      'exec のベース URL が未定義です。\n\n「⚙️ 初期設定・管理」→「GASのWebアプリURL（…/exec）を設定シートに登録」で貼ってから再実行してください。'
     );
     return;
   }

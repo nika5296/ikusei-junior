@@ -31,38 +31,40 @@ function onOpen() {
       .addItem('生徒IDを氏名から一括補完（未入力行）', 'fillChangeSheetNames_')
     )
 
-    // ── 初期設定・管理 ────────────────────────────────────
+    // ── 初期設定・管理（日運用で使う項目に絞る）──────────
     .addSeparator()
     .addSubMenu(ui.createMenu('⚙️ 初期設定・管理')
       .addItem('操作パネルシートを作成/更新', 'initControlPanel_')
       .addSeparator()
       .addItem('🔧 不足シートを追加（既存データを保持）', 'repairMissingSheets_')
-      .addItem('シートを初期化（全シート＋ヘッダー・データ消去）', 'initializeSheets_')
+      .addItem('シートを初期化（全シート＋ヘッダー・データ消去）⚠', 'initializeSheets_')
       .addItem('新規スプレッドシートを別ファイルで作成', 'createNewSpreadsheetForProject_')
       .addSeparator()
-      .addItem('生徒の閲覧トークンを再生成（選択行のみ）', 'regenerateTokensForSelection_')
-      .addItem('生徒ごとのURLを「URLリスト」シートに出力', 'exportStudentUrls_')
-      .addItem('🔗 方式B: 正しい exec URL を登録（clasp の …/exec を貼る）', 'syncDeployedWebAppUrlToSettingsSheet_')
-      .addItem('🔗 方式B: 設定反映→URLリスト出力（このブックのデプロイ）', 'runDemoVariantSetup_syncUrlAndExportUrls_')
-      .addItem('🔗 URLリストのベースURLを今のデプロイに差し替え（token維持）', 'repairUrlListBaseUrlToCurrentDeploy_')
+      .addItem('閲覧トークンを再生成（選択行のみ）', 'regenerateTokensForSelection_')
+      .addItem('URLリストを出力（設定の保護者ポータルURLどおり）', 'exportStudentUrls_')
+      .addItem('本番Vercelを設定に書き込み→URLリスト', 'registerDefaultParentPortalUrlAndExportUrls_')
       .addItem('短縮URLを一括生成', 'shortenAllStudentUrls_')
       .addSeparator()
-      .addItem('🔗 Webアプリのデータ参照先をこのブックに設定（複製ブックで必須）', 'registerWebAppDataSpreadsheetFromActive_')
-      .addItem('Webアプリデータ参照先の上書きを解除', 'clearWebAppDataSpreadsheetOverride_')
+      .addItem('GASのWebアプリURL（…/exec）を設定シートに登録', 'syncDeployedWebAppUrlToSettingsSheet_')
       .addSeparator()
-      .addItem('📋 参照AIテンプレを複製→デモ氏名に置換', 'copyAiTemplateAndApplyDemoMask_')
-      .addItem('📋 このブックのみデモ氏名に置換', 'replaceDemoMaskedNamesInActiveSpreadsheet_')
+      .addItem('複製ブック用: Webアプリのデータ参照先をこのブックに', 'registerWebAppDataSpreadsheetFromActive_')
+      .addItem('データ参照先の上書きを解除', 'clearWebAppDataSpreadsheetOverride_')
       .addSeparator()
       .addItem('既存表取込シート → 生徒マスタに追記', 'importLegacyRowsToMaster_')
     )
 
-    // ── 集計・デバッグ ────────────────────────────────────
+    // ── 集計・復旧・開発（メンテ・テンプレ用はここへ）───
     .addSeparator()
-    .addSubMenu(ui.createMenu('🔧 集計・デバッグ')
+    .addSubMenu(ui.createMenu('🔧 集計・復旧・開発')
       .addItem('振替集計を再計算（全員）', 'recomputeSummary_')
       .addItem('フォーム回答の全行を再処理（ログ再構築）', 'reprocessAllFormRows_')
       .addItem('フォーム回答の最終行を再処理', 'reprocessLastFormRow_')
       .addItem('【診断】シート名一覧を表示', 'debugListSheetNames_')
+      .addSeparator()
+      .addItem('URLリストの閲覧URLを現在の…/execに差し替え（token維持）', 'repairUrlListBaseUrlToCurrentDeploy_')
+      .addSeparator()
+      .addItem('【テンプレ】AIテンプレ複製→デモ氏名に置換', 'copyAiTemplateAndApplyDemoMask_')
+      .addItem('【テンプレ】このブックのみデモ氏名に置換', 'replaceDemoMaskedNamesInActiveSpreadsheet_')
     )
 
     // ── トリガー登録 ──────────────────────────────────────
@@ -205,7 +207,7 @@ function buildSettingsTemplate_() {
     [
       k.WEB_APP_DATA_SPREADSHEET_NOTE,
       '',
-      'ウェブアプリが読むブックはメニュー「Webアプリのデータ参照先をこのブックに設定」でスクリプトプロパティに保存します（複製のみ共有する運用で必要）'
+      'ウェブアプリが読むブックはメニュー「複製ブック用: Webアプリのデータ参照先をこのブックに」でスクリプトプロパティに保存します（複製のみ共有する運用で必要）'
     ],
     ['名簿自動作成開始日', '25', '月の何日以降に翌月・翌々月の出欠名簿シートを自動作成するか（既定: 25）'],
     ['1クラス定員', '10', '1クラスあたりの定員人数（曜日別人数サマリーの「空き」算出に使用）']

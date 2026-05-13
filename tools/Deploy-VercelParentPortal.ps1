@@ -1,9 +1,11 @@
 #Requires -Version 5.1
 <#
-  parent-portal を Vercel 本番にデプロイ（非対話）
+  parent-portal を Vercel 本番にデプロイ（非対話）。
+  通常は Vercel の「Git 連携」で GitHub に push すれば自動デプロイされるため、このスクリプトは任意。
+
   事前: https://vercel.com/account/tokens で Token を発行し、環境変数 VERCEL_TOKEN に設定。
   初回のみ: parent-portal で `npx vercel link` を実行し、.vercel/project.json の orgId / projectId を控える
-    → GitHub の Secrets に VERCEL_ORG_ID / VERCEL_PROJECT_ID として登録すると Actions からも同じプロジェクトに出せる。
+    → GitHub Actions の手動デプロイ用に Secrets に VERCEL_ORG_ID / VERCEL_PROJECT_ID として登録する場合あり。
 
   使用例:
     $env:VERCEL_TOKEN = "xxxxxxxx"

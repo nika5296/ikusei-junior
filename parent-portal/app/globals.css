@@ -5,6 +5,21 @@
 :root {
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 142 76% 28%;
+  --radius: 1rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-white text-slate-800 antialiased;
+  }
 }
 
 .definition-html p {
@@ -12,4 +27,37 @@
 }
 .definition-html p:last-child {
   margin-bottom: 0;
+}
+
+/** GAS から渡る HTML 内の段落も中央揃え（保護者画面の統一感用） */
+.definition-html.text-center p {
+  text-align: center;
+}
+
+/** 2枚目モックに近い薄い緑の下地（テニスボール風の淡い円） */
+.kg-page-bg {
+  background-color: #f0fdf4;
+  background-image:
+    radial-gradient(ellipse 120% 80% at 15% 20%, rgba(16, 185, 129, 0.07) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 70% at 85% 75%, rgba(5, 150, 105, 0.06) 0%, transparent 48%);
+}
+
+@keyframes kg-mascot-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-1.5deg);
+  }
+}
+
+.kg-mascot {
+  animation: kg-mascot-float 2.8s ease-in-out 0.2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kg-mascot {
+    animation: none;
+  }
 }

@@ -1,13 +1,13 @@
-# parent-portal を Vercel にデプロイ（初回のみ GitHub の Secrets を設定）
+# 推奨運用: Vercel の「Git 連携」で GitHub の main/master に push すると自動ビルド・本番反映されます。
+# そのため本ワークフローは push では起動しません（Actions と Vercel 双方が走る二重デプロイを防ぐ）。
+#
+# 手元で Actions から出したいときだけ: リポジトリの Actions → 本ワークフロー → Run workflow
+# （要 Secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID）
+#
 # 参考: https://vercel.com/kb/guide/how-can-i-use-github-actions-with-vercel
-name: Deploy parent-portal to Vercel
+name: Deploy parent-portal to Vercel (manual)
 
 on:
-  push:
-    branches: [main, master]
-    paths:
-      - 'parent-portal/**'
-      - '.github/workflows/vercel-parent-portal.yml'
   workflow_dispatch:
 
 concurrency:

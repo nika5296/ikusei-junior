@@ -71,6 +71,12 @@ var CONFIG = {
   DEFAULT_ATTENDANCE_FORM_URL:
     'https://docs.google.com/forms/d/e/1FAIpQLSeW7H0GdT9OZYmfhxmc_5AgsdyKhCIcAJuNy9SVdu7GWVbIsQ/viewform',
 
+  /**
+   * 本番の保護者ポータル（Vercel）オリジン。メニュー「本番Vercel…」で設定シートへ書き込む。
+   * 他組織で再利用する場合は '' に戻す。
+   */
+  DEFAULT_PARENT_PORTAL_BASE_URL: 'https://ikusei-junior.vercel.app',
+
   /** 生徒マスタ列（1始まり） */
   MASTER_COL: {
     STUDENT_ID: 1,
