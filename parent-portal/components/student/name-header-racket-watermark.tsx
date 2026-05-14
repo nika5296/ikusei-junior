@@ -1,18 +1,23 @@
-/** 名前エリア右側の透かしラケット装飾 */
+/** 名前エリア：ミニマルな透かしラケット（細線・円＋弦2本＋シャフト1本） */
 export function NameHeaderRacketWatermark({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 120 140"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <g opacity="0.22" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-        <ellipse cx="52" cy="58" rx="38" ry="42" transform="rotate(-32 52 58)" />
-        <path d="M78 88 L108 128" strokeWidth="5" />
-        <path d="M32 48 Q52 58 72 52" strokeWidth="2" />
-        <path d="M36 62 Q54 70 74 64" strokeWidth="2" />
+    <svg className={className} viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <g
+        transform="translate(6 2) rotate(-34 50 54)"
+        stroke="rgba(230, 253, 245, 0.55)"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="50" cy="50" r="30" strokeWidth="1.75" />
+        <path
+          d="M23 47c9 3 18 4 27 3s18-2 27-5"
+          strokeWidth="1.35"
+        />
+        <path
+          d="M25 56c8 2.5 16 3.5 25 3s17-1.5 25-4"
+          strokeWidth="1.35"
+        />
+        <line x1="69" y1="71" x2="93" y2="102" strokeWidth="1.65" />
       </g>
     </svg>
   );
