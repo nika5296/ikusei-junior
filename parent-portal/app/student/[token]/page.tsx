@@ -1,6 +1,6 @@
-import { ChevronRight } from 'lucide-react';
+import { Calendar, ChevronRight } from 'lucide-react';
 import { DefinitionAccordion } from '@/components/student/definition-accordion';
-import { RemainingMotionLines } from '@/components/student/remaining-motion-lines';
+import { NameHeaderRacketWatermark } from '@/components/student/name-header-racket-watermark';
 import { TennisRacketIcon } from '@/components/student/tennis-racket-icon';
 import { Button } from '@/components/ui/button';
 import { formatGasUpdatedDisplay } from '@/lib/format-gas-datetime';
@@ -21,12 +21,13 @@ export default async function StudentPage({ params }: PageProps) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'データ取得に失敗しました';
     return (
-      <main className="kg-page-bg mx-auto flex min-h-dvh max-w-lg flex-col px-3 py-6">
-        <p className="mx-auto w-full max-w-sm rounded-2xl border border-rose-200 bg-white/90 px-4 py-3 text-center text-sm text-rose-900 shadow-sm">
+      <main className="kg-page-bg mx-auto min-h-dvh w-full max-w-[430px] overflow-x-hidden px-4 py-8 text-[#1F2937]">
+        <p className="rounded-3xl border border-rose-200/80 bg-white/95 px-5 py-4 text-center text-[15px] text-rose-900 shadow-md">
           {msg}
         </p>
-        <p className="mx-auto mt-4 max-w-sm text-center text-xs text-slate-600">
-          Vercel に <code className="rounded bg-white/90 px-1">GAS_STUDENT_API_BASE_URL</code> を設定してください。
+        <p className="mx-auto mt-5 max-w-sm text-center text-sm leading-relaxed text-[#6B7280]">
+          Vercel に <code className="rounded-lg bg-white/90 px-1.5 py-0.5 text-[13px]">GAS_STUDENT_API_BASE_URL</code>{' '}
+          を設定してください。
         </p>
       </main>
     );
@@ -36,11 +37,13 @@ export default async function StudentPage({ params }: PageProps) {
 
   if (data.error) {
     return (
-      <main className="kg-page-bg mx-auto flex min-h-dvh max-w-lg flex-col px-3 py-6">
-        <p className="mx-auto w-full max-w-sm rounded-2xl border border-amber-200 bg-white/90 px-4 py-3 text-center text-base font-medium text-amber-950 shadow-sm">
+      <main className="kg-page-bg mx-auto min-h-dvh w-full max-w-[430px] overflow-x-hidden px-4 py-8 text-[#1F2937]">
+        <p className="rounded-3xl border border-amber-200/90 bg-white/95 px-5 py-4 text-center text-base font-medium text-amber-950 shadow-md">
           {data.error}
         </p>
-        <p className="mx-auto mt-6 max-w-sm text-center text-sm text-slate-600">配布のURLから再度お試しください。</p>
+        <p className="mx-auto mt-6 max-w-sm text-center text-[15px] leading-relaxed text-[#6B7280]">
+          配布のURLから再度お試しください。
+        </p>
       </main>
     );
   }
@@ -50,38 +53,41 @@ export default async function StudentPage({ params }: PageProps) {
     data.remainingHasUnit && String(data.remainingSuffix || '').trim() === '回';
 
   return (
-    <main className="kg-page-bg min-h-dvh w-full">
-      <div className="mx-auto max-w-lg px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
-        {/* 題名ブロック：ロゴ左上＋校名横並び、下に「育成クラス振替残数」 */}
-        <section className="mb-3 rounded-2xl bg-white px-4 py-4 shadow-md ring-1 ring-emerald-900/10">
-          <div className="flex flex-row items-center gap-3">
+    <main className="kg-page-bg min-h-dvh w-full overflow-x-hidden text-[#1F2937]">
+      <div className="mx-auto w-full max-w-[430px] px-4 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))]">
+        {/* 上部ヘッダー：白カード */}
+        <header className="mb-2 rounded-3xl bg-white px-5 py-5 shadow-md ring-1 ring-black/5">
+          <div className="flex items-center gap-4">
             {a.logoUrl ? (
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-100">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#EAFBF3] ring-1 ring-[#009b6b]/15">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={a.logoUrl}
                   alt=""
-                  width={40}
-                  height={40}
-                  className="h-9 w-9 object-contain"
+                  width={44}
+                  height={44}
+                  className="h-11 w-11 object-contain"
                   decoding="async"
                 />
               </div>
             ) : (
-              <div className="h-12 w-12 shrink-0 rounded-full bg-emerald-50 ring-1 ring-emerald-100" aria-hidden />
+              <div
+                className="h-14 w-14 shrink-0 rounded-full bg-[#EAFBF3] ring-1 ring-[#009b6b]/15"
+                aria-hidden
+              />
             )}
-            <p className="min-w-0 flex-1 text-left text-[15px] font-extrabold leading-snug tracking-tight text-emerald-900 sm:text-base">
-              鎌倉グリーンテニススクール
-            </p>
+            <div className="min-w-0 flex-1">
+              <p className="text-[17px] font-extrabold leading-snug tracking-tight text-[#0d4d3a]">
+                鎌倉グリーンテニススクール
+              </p>
+              <p className="mt-2.5 text-[15px] font-semibold tracking-wide text-[#009b6b]">育成クラス｜振替残数</p>
+            </div>
           </div>
-          <h1 className="mt-4 border-t border-emerald-100 pt-3 text-center text-lg font-black tracking-wide text-emerald-950 sm:text-xl">
-            育成クラス振替残数
-          </h1>
-        </section>
+        </header>
 
-        {/* 氏名：中央・大きく、左右に大きなマスコット */}
-        <section className="mb-3 flex items-end justify-center gap-0.5 px-0 sm:gap-1">
-          <div className="flex min-h-[7.5rem] w-[min(30%,5.75rem)] flex-1 items-end justify-end sm:min-h-[8.5rem] sm:w-28">
+        {/* マスコット：メインカードに少し重なる */}
+        <div className="relative z-10 -mb-7 flex justify-between px-0.5 sm:-mb-9">
+          <div className="flex w-[34%] max-w-[7.25rem] shrink-0 items-end justify-start sm:max-w-[8rem]">
             {a.bearLeftUrl ? (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -90,21 +96,16 @@ export default async function StudentPage({ params }: PageProps) {
                   alt=""
                   width={112}
                   height={132}
-                  className="kg-mascot h-[6.5rem] w-auto max-w-full object-contain object-bottom drop-shadow-md sm:h-[7.5rem]"
+                  className="kg-mascot h-[5.75rem] w-auto max-w-full object-contain object-bottom drop-shadow-lg sm:h-[6.5rem]"
                   decoding="async"
                 />
               </>
             ) : (
-              <span className="inline-block w-4 shrink-0 sm:w-6" aria-hidden />
+              <span className="inline-block h-1 w-6 shrink-0" aria-hidden />
             )}
           </div>
-          <div className="z-10 flex max-w-[58%] min-w-0 flex-col items-center justify-end px-1 pb-1 text-center">
-            <p className="text-[11px] font-semibold tracking-wide text-emerald-800/90">おなまえ</p>
-            <p className="mt-1.5 break-words text-[1.65rem] font-bold leading-tight tracking-tight text-emerald-950 sm:text-4xl sm:leading-tight">
-              {data.name}
-            </p>
-          </div>
-          <div className="flex min-h-[7.5rem] w-[min(30%,5.75rem)] flex-1 items-end justify-start sm:min-h-[8.5rem] sm:w-28">
+          <div className="min-w-0 flex-1" aria-hidden />
+          <div className="flex w-[34%] max-w-[7.25rem] shrink-0 items-end justify-end sm:max-w-[8rem]">
             {a.bearRightUrl ? (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -113,77 +114,77 @@ export default async function StudentPage({ params }: PageProps) {
                   alt=""
                   width={120}
                   height={140}
-                  className="kg-mascot h-[7rem] w-auto max-w-full object-contain object-bottom drop-shadow-md sm:h-[8rem]"
+                  className="kg-mascot h-[6rem] w-auto max-w-full object-contain object-bottom drop-shadow-lg sm:h-[6.75rem]"
                   decoding="async"
                 />
               </>
             ) : (
-              <span className="inline-block w-4 shrink-0 sm:w-6" aria-hidden />
+              <span className="inline-block h-1 w-6 shrink-0" aria-hidden />
             )}
           </div>
-        </section>
+        </div>
 
-        {/* メインカード（メトリクス〜） */}
-        <div className="mx-auto w-full max-w-[22.5rem] overflow-hidden rounded-[1.75rem] bg-white shadow-[0_12px_40px_-12px_rgba(15,118,110,0.35)] ring-1 ring-emerald-900/12">
-          <div className="grid grid-cols-2 divide-x divide-slate-200/90 bg-white">
-            <div className="flex items-center justify-center gap-2.5 px-2 py-5">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-teal-100 ring-1 ring-teal-200/80">
-                <TennisRacketIcon className="size-5 text-teal-700" />
+        {/* メインカード */}
+        <div className="relative z-20 mx-auto w-full overflow-hidden rounded-[1.85rem] bg-white kg-main-card ring-1 ring-[#009b6b]/10">
+          {/* 名前エリア（グリーングラデーション） */}
+          <div className="kg-name-header relative overflow-hidden px-5 pb-9 pt-8">
+            <NameHeaderRacketWatermark className="pointer-events-none absolute -right-4 bottom-[-20%] h-[125%] w-auto min-w-[10rem] max-w-[58%]" />
+            <p className="relative text-[13px] font-semibold tracking-[0.14em] text-white/90">おなまえ</p>
+            <p className="relative mt-3 break-words text-[1.9rem] font-bold leading-[1.2] tracking-tight text-white sm:text-[2.15rem]">
+              {data.name}
+            </p>
+          </div>
+
+          {/* 残数エリア：2カラム */}
+          <div className="grid grid-cols-2 divide-x divide-slate-200/90 bg-white px-1 py-7 sm:px-2 sm:py-8">
+            <div className="flex flex-col items-center justify-center gap-3 px-2 text-center sm:px-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#EAFBF3] ring-1 ring-[#009b6b]/12">
+                <Calendar className="size-[22px] text-[#009b6b]" strokeWidth={2.25} aria-hidden />
               </div>
-              <div className="min-w-0 text-left">
-                <p className="text-[11px] font-semibold text-slate-500">更新日時</p>
-                <p className="mt-0.5 text-[13px] font-bold leading-snug text-slate-800">{updatedLine}</p>
+              <div className="w-full min-w-0">
+                <p className="text-[13px] font-semibold text-[#6B7280]">更新日時</p>
+                <p className="mt-2 text-[15px] font-bold leading-snug text-[#1F2937]">{updatedLine}</p>
               </div>
             </div>
-            <div className="flex flex-col items-center justify-center gap-1.5 px-2 py-4 text-center">
-              <p className="text-xs font-bold text-emerald-700">振替残数</p>
+            <div className="flex flex-col items-center justify-center gap-2 px-2 text-center sm:px-3">
+              <p className="text-[13px] font-bold text-[#009b6b]">振替残数</p>
               {data.remainingHasUnit ? (
-                <div className="relative flex items-baseline justify-center gap-0.5 px-1">
-                  <span className="relative shrink-0 tabular-nums text-5xl font-black leading-none tracking-tight text-teal-600 drop-shadow-sm sm:text-[3.25rem]">
+                <div className="mt-1 flex items-baseline justify-center gap-1">
+                  <span className="tabular-nums text-[3.35rem] font-black leading-none tracking-tight text-[#00b884] sm:text-[3.75rem]">
                     {data.remainingMain}
-                    <span className="pointer-events-none absolute -right-1 top-0 sm:-right-0.5">
-                      <RemainingMotionLines />
-                    </span>
                   </span>
                   {unitIsKai ? (
-                    <span className="shrink-0 pb-0.5 text-2xl font-black tabular-nums text-teal-600 sm:text-[1.75rem]">
+                    <span className="shrink-0 pb-1 text-[1.65rem] font-black tabular-nums text-[#009b6b] sm:text-[1.85rem]">
                       回
                     </span>
                   ) : (
-                    <span className="shrink-0 pb-0.5 text-xl font-bold text-emerald-700">{data.remainingSuffix}</span>
+                    <span className="shrink-0 pb-1 text-xl font-bold text-[#009b6b]">{data.remainingSuffix}</span>
                   )}
                 </div>
               ) : (
-                <div className="relative flex items-baseline justify-center px-1">
-                  <span className="relative shrink-0 tabular-nums text-5xl font-black leading-none text-teal-600 sm:text-[3.25rem]">
-                    {data.remainingMain}
-                    <span className="pointer-events-none absolute -right-1 top-0 sm:-right-0.5">
-                      <RemainingMotionLines />
-                    </span>
-                  </span>
-                </div>
+                <span className="mt-1 tabular-nums text-[3.35rem] font-black leading-none text-[#00b884] sm:text-[3.75rem]">
+                  {data.remainingMain}
+                </span>
               )}
             </div>
           </div>
 
-          <div className="bg-white px-2 pb-2 pt-1">
+          <div className="bg-white px-3 pb-2 pt-0">
             {data.definitionHtml ? <DefinitionAccordion html={data.definitionHtml} /> : null}
 
-            <div className="mt-5 flex flex-col items-center gap-3 px-1 pb-4">
+            <div className="mt-6 flex flex-col items-stretch gap-3 px-1 pb-6 pt-1">
               {data.reservationUrl ? (
-                <Button variant="reservation" asChild className="w-full max-w-[19rem]">
+                <Button variant="reservation" asChild className="w-full">
                   <a href={data.reservationUrl} target="_blank" rel="noopener noreferrer">
-                    <span className="flex w-full items-center justify-between gap-2">
-                      <TennisRacketIcon className="size-6 shrink-0 text-white drop-shadow" />
-                      <span className="flex-1 text-center text-[15px] font-bold text-neutral-900">
-                        振替予約はこちら
-                      </span>
-                      <ChevronRight className="size-5 shrink-0 text-neutral-900" strokeWidth={2.5} aria-hidden />
+                    <span className="flex w-full min-h-14 items-center justify-between gap-3 px-1">
+                      <TennisRacketIcon className="size-6 shrink-0 text-[#1F2937]" />
+                      <span className="flex-1 text-center text-[16px] font-bold text-[#1F2937]">振替予約はこちら</span>
+                      <ChevronRight className="size-6 shrink-0 text-[#1F2937]" strokeWidth={2.5} aria-hidden />
                     </span>
                   </a>
                 </Button>
               ) : (
-                <p className="w-full max-w-[19rem] rounded-full border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm font-medium text-amber-950">
+                <p className="w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-center text-[15px] font-medium text-amber-950">
                   予約ページ未設定です
                 </p>
               )}
@@ -191,7 +192,7 @@ export default async function StudentPage({ params }: PageProps) {
           </div>
         </div>
 
-        <p className="mx-auto mt-4 max-w-[19rem] px-2 text-center text-[11px] leading-relaxed text-slate-500">
+        <p className="mx-auto mt-7 max-w-md px-2 text-center text-[13px] leading-relaxed text-[#6B7280]">
           ※このURLはご家庭内のみでご利用ください
         </p>
       </div>
