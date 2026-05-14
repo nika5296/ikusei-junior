@@ -1,4 +1,7 @@
-/** 予約ボタン左の白ラケット（簡易 SVG） */
+/**
+ * テニスラケット（ストローク）。currentColor で色が付く。
+ * 更新日時欄・予約ボタン左など共通利用。
+ */
 export function TennisRacketIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -8,17 +11,17 @@ export function TennisRacketIcon({ className }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
     >
-      <path
-        d="M14.5 3.5c2.5 2.5 2.2 6.8-.8 9.8-3 3-7.3 3.3-9.8.8l-.7-.7c-1.2-1.2-1-3.3.5-4.8C5 6.4 8.2 5.8 10.5 4.5c1.5-.8 2.6-2 3.5-3.5 1-1.7 2.5-1.9 3.5-.9l.7.7Z"
-        fill="currentColor"
-        opacity="0.95"
-      />
-      <path
-        d="M5 19l3-3"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
+      <g stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        {/* ヘッド（楕円） */}
+        <ellipse cx="10.2" cy="9.3" rx="6.1" ry="6.45" transform="rotate(-38 10.2 9.3)" />
+        {/* 簡易ストリング */}
+        <path d="M5.8 7.2q4.2 2.4 8.6 1.1" opacity="0.85" />
+        <path d="M6.4 10.1q3.8 1.2 7.8 0.3" opacity="0.85" />
+        <path d="M7.2 12.8q3.2 0.5 6.6-0.2" opacity="0.85" />
+        {/* シャフト〜グリップ */}
+        <path d="M14.4 13.6l5.8 8.2" strokeWidth="2.15" />
+        <path d="M18.8 20.2l2.1 1.6" strokeWidth="2" />
+      </g>
     </svg>
   );
 }

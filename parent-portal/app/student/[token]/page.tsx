@@ -1,4 +1,4 @@
-import { Calendar, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { DefinitionAccordion } from '@/components/student/definition-accordion';
 import { RemainingMotionLines } from '@/components/student/remaining-motion-lines';
 import { TennisRacketIcon } from '@/components/student/tennis-racket-icon';
@@ -128,7 +128,7 @@ export default async function StudentPage({ params }: PageProps) {
           <div className="grid grid-cols-2 divide-x divide-slate-200/90 bg-white">
             <div className="flex items-center justify-center gap-2.5 px-2 py-5">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-teal-100 ring-1 ring-teal-200/80">
-                <Calendar className="size-5 text-teal-700" strokeWidth={2.25} aria-hidden />
+                <TennisRacketIcon className="size-5 text-teal-700" />
               </div>
               <div className="min-w-0 text-left">
                 <p className="text-[11px] font-semibold text-slate-500">更新日時</p>
@@ -138,25 +138,29 @@ export default async function StudentPage({ params }: PageProps) {
             <div className="flex flex-col items-center justify-center gap-1.5 px-2 py-4 text-center">
               <p className="text-xs font-bold text-emerald-700">振替残数</p>
               {data.remainingHasUnit ? (
-                <div className="flex items-start justify-center gap-1">
-                  <span className="text-5xl font-black leading-none tabular-nums tracking-tight text-teal-600 drop-shadow-sm sm:text-[3.25rem]">
+                <div className="relative flex items-baseline justify-center gap-0.5 px-1">
+                  <span className="relative shrink-0 tabular-nums text-5xl font-black leading-none tracking-tight text-teal-600 drop-shadow-sm sm:text-[3.25rem]">
                     {data.remainingMain}
+                    <span className="pointer-events-none absolute -right-1 top-0 sm:-right-0.5">
+                      <RemainingMotionLines />
+                    </span>
                   </span>
-                  <RemainingMotionLines className="pt-1.5" />
                   {unitIsKai ? (
-                    <span className="mt-1.5 inline-flex h-8 min-w-[1.75rem] items-center justify-center rounded border-2 border-emerald-600 bg-white text-lg font-bold text-emerald-700">
+                    <span className="shrink-0 pb-0.5 text-2xl font-black tabular-nums text-teal-600 sm:text-[1.75rem]">
                       回
                     </span>
                   ) : (
-                    <span className="mt-2 text-xl font-bold text-emerald-700">{data.remainingSuffix}</span>
+                    <span className="shrink-0 pb-0.5 text-xl font-bold text-emerald-700">{data.remainingSuffix}</span>
                   )}
                 </div>
               ) : (
-                <div className="flex items-start justify-center gap-1">
-                  <span className="text-5xl font-black leading-none text-teal-600 sm:text-[3.25rem]">
+                <div className="relative flex items-baseline justify-center px-1">
+                  <span className="relative shrink-0 tabular-nums text-5xl font-black leading-none text-teal-600 sm:text-[3.25rem]">
                     {data.remainingMain}
+                    <span className="pointer-events-none absolute -right-1 top-0 sm:-right-0.5">
+                      <RemainingMotionLines />
+                    </span>
                   </span>
-                  <RemainingMotionLines className="pt-1.5" />
                 </div>
               )}
             </div>
