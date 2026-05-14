@@ -1,7 +1,5 @@
 import { Calendar, ChevronRight } from 'lucide-react';
 import { DefinitionAccordion } from '@/components/student/definition-accordion';
-import { NameHeaderRacketWatermark } from '@/components/student/name-header-racket-watermark';
-import { TennisRacketIcon } from '@/components/student/tennis-racket-icon';
 import { Button } from '@/components/ui/button';
 import { formatGasUpdatedDisplay } from '@/lib/format-gas-datetime';
 import { fetchStudentPayload } from '@/lib/gas';
@@ -127,10 +125,9 @@ export default async function StudentPage({ params }: PageProps) {
         {/* メインカード */}
         <div className="relative z-20 mx-auto w-full overflow-hidden rounded-[1.85rem] bg-white kg-main-card ring-1 ring-[#009b6b]/10">
           {/* 名前エリア（グリーングラデーション） */}
-          <div className="kg-name-header relative overflow-hidden px-5 pb-9 pt-8">
-            <NameHeaderRacketWatermark className="pointer-events-none absolute -right-4 bottom-[-20%] h-[125%] w-auto min-w-[10rem] max-w-[58%]" />
-            <p className="relative text-[13px] font-semibold tracking-[0.14em] text-white/90">おなまえ</p>
-            <p className="relative mt-3 break-words text-[1.9rem] font-bold leading-[1.2] tracking-tight text-white sm:text-[2.15rem]">
+          <div className="kg-name-header px-5 pb-9 pt-8">
+            <p className="text-[13px] font-semibold tracking-[0.14em] text-white/90">おなまえ</p>
+            <p className="mt-3 break-words text-[1.9rem] font-bold leading-[1.2] tracking-tight text-white sm:text-[2.15rem]">
               {data.name}
             </p>
           </div>
@@ -176,9 +173,8 @@ export default async function StudentPage({ params }: PageProps) {
               {data.reservationUrl ? (
                 <Button variant="reservation" asChild className="w-full">
                   <a href={data.reservationUrl} target="_blank" rel="noopener noreferrer">
-                    <span className="flex w-full min-h-14 items-center justify-between gap-3 px-1">
-                      <TennisRacketIcon className="size-6 shrink-0 text-[#1F2937]" />
-                      <span className="flex-1 text-center text-[16px] font-bold text-[#1F2937]">振替予約はこちら</span>
+                    <span className="flex w-full min-h-14 items-center justify-center gap-2 px-4">
+                      <span className="text-[16px] font-bold text-[#1F2937]">振替予約はこちら</span>
                       <ChevronRight className="size-6 shrink-0 text-[#1F2937]" strokeWidth={2.5} aria-hidden />
                     </span>
                   </a>
