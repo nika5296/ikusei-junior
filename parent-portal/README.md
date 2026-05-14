@@ -14,6 +14,15 @@ Google Apps Script の `format=json` API から振替残数を表示します（
 | `GAS_STUDENT_API_BASE_URL` | GAS の exec URL（`https://script.google.com/macros/s/…/exec` まで） |
 | `NEXT_PUBLIC_BRAND_ASSET_BASE_URL` | （任意）GAS が返す `assets` が空のときの補完用。未設定なら画像なしで表示（**Vercel だけの運用で問題ありません**） |
 
+## 公式ブランド画像（ロゴ・左右マスコット）
+
+**プレースホルダー画像はリポジトリに含めていません。** スクール公式のデータだけを `public/brand/` に配置してください。
+
+1. ファイル名は **`lib/student-assets.ts` の `BRAND_ASSET_FILES`** と完全一致（リネーム不可）。
+2. 解像度・用途の一覧は **`docs/brand-assets-spec.json`**。
+3. ローカルまたは Vercel で静的ファイルとして配信する場合: `public/brand/` に PNG を置き、環境変数に `NEXT_PUBLIC_BRAND_ASSET_BASE_URL=/brand` を設定。
+4. フォルダ内の **`public/brand/PLACE_OFFICIAL_FILES_HERE.txt`** にも同じ注意が書いてあります。
+
 UI は元の **WebApp.html** と同じ **森緑 `#14532d`** ヘッダー・カード・黄色の予約ボタンに揃え、**Shadcn/ui（Accordion / Button）+ Tailwind** で実装しています。
 
 ---

@@ -1,0 +1,11 @@
+このフォルダには「公式の」ブランド画像だけを置いてください。
+ファイル名は lib/student-assets.ts の BRAND_ASSET_FILES と完全一致させること（リネーム禁止）。
+
+1) kamakura-green-logo.png … 校ロゴ（正方形・透過推奨）
+2) bear-left.png … 左マスコット（透過・縦長）
+3) bear-right.png … 右マスコット（透過・縦長）
+
+仕様の詳細: docs/brand-assets-spec.json
+ローカルで読み込む場合: .env.local に NEXT_PUBLIC_BRAND_ASSET_BASE_URL=/brand
+
+※ プレースホルダーや無関係なストック写真はコミットしないでください。

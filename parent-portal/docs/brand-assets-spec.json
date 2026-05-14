@@ -1,0 +1,53 @@
+{
+  "$schema": "説明用JSON（アプリからは読み込みません）",
+  "version": 1,
+  "sourceOfTruth": "lib/student-assets.ts の BRAND_ASSET_FILES とファイル名を一致させてください。",
+  "placement": {
+    "nextPublicDir": "parent-portal/public/brand/",
+    "envWhenUsingLocalFiles": "NEXT_PUBLIC_BRAND_ASSET_BASE_URL=/brand",
+    "note": "先頭スラッシュ付きのサイト内パス。GAS の JSON で各 assets が空のときのみこのベース＋ファイル名で補完されます。",
+    "gasSurgeDir": "リポジトリ直下の surge/（GAS が Surge のベースURLから同じファイル名を参照する運用。詳細は surge/README.md）",
+    "sameFilenamesEverywhere": "Next の public/brand と Surge ではファイル名を揃える（BRAND_ASSET_FILES と一致）。"
+  },
+  "slots": [
+    {
+      "id": "logo",
+      "filename": "kamakura-green-logo.png",
+      "ui": "トップ白カード左上の円形エリア（object-contain）",
+      "recommended": {
+        "widthPx": 256,
+        "heightPx": 256,
+        "aspect": "1:1",
+        "background": "透過推奨（円形クリップはしないが、緑系の薄い円背景の上に載る）"
+      },
+      "rights": "スクール公式ロゴのみ使用。無関係なストック画像は置かないこと。"
+    },
+    {
+      "id": "bearLeft",
+      "filename": "bear-left.png",
+      "ui": "氏名ブロック左・画面下基準で配置されるマスコット",
+      "recommended": {
+        "widthPx": 320,
+        "heightPx": 400,
+        "aspect": "縦長（足元が画面下端で揃う想定）",
+        "background": "透過推奨"
+      },
+      "rights": "デザイン確定版の公式マスコットのみ。左右で別ファイル。"
+    },
+    {
+      "id": "bearRight",
+      "filename": "bear-right.png",
+      "ui": "氏名ブロック右・画面下基準で配置されるマスコット",
+      "recommended": {
+        "widthPx": 320,
+        "heightPx": 400,
+        "aspect": "縦長",
+        "background": "透過推奨"
+      },
+      "rights": "公式マスコットのみ。bear-left とは別カット（向き・ポーズが違う想定）。"
+    }
+  ],
+  "notRasterInRepo": [
+    "カレンダーアイコン・ラケット装飾・星・背景のテニスボール風グラデーションは SVG / CSS で実装済み。ラスタ化不要。"
+  ]
+}

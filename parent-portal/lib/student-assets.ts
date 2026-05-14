@@ -1,9 +1,21 @@
 import type { StudentApiPayload } from '@/lib/gas';
 
 /**
+ * 公式ブランド画像のファイル名（`public/brand/` 配置時と GAS フォールバックで共通）。
+ * 仕様・解像度の説明は `docs/brand-assets-spec.json`。
+ */
+export const BRAND_ASSET_FILES = {
+  logo: 'kamakura-green-logo.png',
+  bearLeft: 'bear-left.png',
+  bearRight: 'bear-right.png'
+} as const;
+
+export type BrandAssetRole = keyof typeof BRAND_ASSET_FILES;
+
+/**
  * ロゴ・マスコットのフォールバック用ベース URL（末尾スラッシュなし）。
- * 未設定なら GAS が返した URL のみ使用（Vercel 単体運用で十分な場合は空のまま）。
- * 必要なときだけ Surge / 別 CDN / 同サイトの公開 URL などを指定。
+ * 例: 同サイトの `public/brand` を使う → `NEXT_PUBLIC_BRAND_ASSET_BASE_URL=/brand`
+ * 未設定なら GAS が返した URL のみ使用（画像なし表示になる）。
  */
 function optionalAssetBase(): string {
   return (process.env.NEXT_PUBLIC_BRAND_ASSET_BASE_URL?.trim() || '').replace(/\/+$/, '');
@@ -12,14 +24,15 @@ function optionalAssetBase(): string {
 /** GAS の URL を優先。環境変数があれば空欄時のみそこから補完。 */
 export function resolveStudentAssets(assets: StudentApiPayload['assets']) {
   const base = optionalAssetBase();
-  const pick = (fromGas: string, file: string) => {
+  const pick = (fromGas: string, role: BrandAssetRole) => {
     const g = String(fromGas || '').trim();
     if (g) return g;
+    const file = BRAND_ASSET_FILES[role];
     return base ? `${base}/${file}` : '';
   };
   return {
-    logoUrl: pick(assets.logoUrl, 'kamakura-green-logo.png'),
-    bearLeftUrl: pick(assets.bearLeftUrl, 'bear-left.png'),
-    bearRightUrl: pick(assets.bearRightUrl, 'bear-right.png')
+    logoUrl: pick(assets.logoUrl, 'logo'),
+    bearLeftUrl: pick(assets.bearLeftUrl, 'bearLeft'),
+    bearRightUrl: pick(assets.bearRightUrl, 'bearRight')
   };
 }
