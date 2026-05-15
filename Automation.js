@@ -3,12 +3,13 @@
  *
  * installScheduledAutomationTriggers_ を1回実行すると次が登録されます:
  *   - フォーム送信時 → onFormSubmit（ログ・集計シート・名簿・名簿集計列）
- *   - 毎朝8時（東京）→ morningBatch8am_（月末の翌月シート作成・ログ反映・集計・未入力メール）
+ *   - 毎朝9時（東京）→ morningBatch9am_（月末の翌月シート作成・ログ反映・集計・前日未入力メール）
  */
 
 /** 一本化時に削除する既存トリガーのハンドラ名（手動で別用途に付けた同名は消えます） */
 var AUTOMATION_TRIGGER_HANDLERS = [
   'onFormSubmit',
+  'morningBatch9am_',
   'morningBatch8am_',
   'dailyAttendanceAlert_',
   'recomputeSummary_',
@@ -31,9 +32,9 @@ function installScheduledAutomationTriggers_() {
     }
   }
 
-  ScriptApp.newTrigger('morningBatch8am_')
+  ScriptApp.newTrigger('morningBatch9am_')
     .timeBased()
-    .atHour(8)
+    .atHour(9)
     .everyDays(1)
     .inTimezone(CONFIG.TIMEZONE)
     .create();
@@ -50,18 +51,18 @@ function installScheduledAutomationTriggers_() {
       '）。\n\n' +
       '【フォーム送信のたび】\n' +
       '出欠ログ → 集計シート（振替残など）→ 各月名簿へ反映 → 名簿の欠席・振替列も更新\n\n' +
-      '【毎朝8時】\n' +
-      '（期末のみ）翌月名簿シート作成 → ログを名簿へ → 集計更新 → 未入力セルがあればメール\n\n' +
+      '【毎朝9時】\n' +
+      '（期末のみ）翌月名簿シート作成 → ログを名簿へ → 集計更新 → 前日の名簿未入力があればメール（名簿で送らない場合のみフォーム未回答アラート）\n\n' +
       '【メンバー変更予定・新規入会】\n' +
       '編集後、自動で名簿を同期します（約90秒に1回まで）。\n\n' +
-      '※旧「毎朝7時」「毎朝9時」「名簿8時・9時」トリガーは削除済みです。'
+      '※旧「毎朝7時・8時」トリガーは削除済みです。再登録が必要なら本メニューを再実行してください。'
   );
 }
 
 /**
- * 毎朝8時・時間主導トリガーから実行
+ * 毎朝9時・時間主導トリガーから実行
  */
-function morningBatch8am_() {
+function morningBatch9am_() {
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(CONFIG.LOCK_TIMEOUT_MS);
@@ -70,15 +71,23 @@ function morningBatch8am_() {
     updateFromLog();
     recomputeSummary_();
     updateSummary();
-    checkMissing();
+    var rosterMailSent = checkMissing();
+    if (!rosterMailSent) {
+      dailyAttendanceAlert_();
+    }
   } catch (err) {
-    Logger.log('morningBatch8am_: ' + err);
+    Logger.log('morningBatch9am_: ' + err);
     try {
-      logErrorToSheet_('朝バッチ8時', String(err));
+      logErrorToSheet_('朝バッチ9時', String(err));
     } catch (e2) {}
   } finally {
     lock.releaseLock();
   }
+}
+
+/** @deprecated 旧8時トリガー互換（morningBatch9am_ へ委譲） */
+function morningBatch8am_() {
+  morningBatch9am_();
 }
 
 /**

@@ -1,12 +1,13 @@
 /**
- * 未入力アラート（毎朝7時・東京）
+ * 未入力アラート（フォーム回答の有無）。
+ * 朝バッチ（9時）では名簿メールを送った日は呼ばれず、こちらのみ送る場合がある。
  */
 
 function dailyAttendanceAlert_() {
-  var tz = String(getSetting_(CONFIG.SETTINGS_KEYS.TIMEZONE, CONFIG.TIMEZONE) || CONFIG.TIMEZONE);
-  var now = new Date();
-
-  var yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  var jst = getNowJST_();
+  var today = new Date(jst.year, jst.month - 1, jst.day);
+  var yesterday = new Date(today.getTime());
+  yesterday.setDate(yesterday.getDate() - 1);
   var yWd = weekdayOfDate_(yesterday);
   /** 月・火・木・金のレッスン日のみ（水・土・日は対象外） */
   if (!arrayContainsWeekday_(CONFIG.TARGET_WEEKDAYS, yWd)) {
@@ -28,7 +29,7 @@ function dailyAttendanceAlert_() {
     return;
   }
 
-  var email = String(getSetting_(CONFIG.SETTINGS_KEYS.ALERT_EMAIL, 'vnika0305@gmail.com') || '').trim();
+  var email = String(getSetting_(CONFIG.SETTINGS_KEYS.ALERT_EMAIL, '') || '').trim();
   if (!email) {
     return;
   }

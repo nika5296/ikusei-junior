@@ -841,24 +841,28 @@ function buildMemo_(sheet, year, month, numStudents) {
 // =============================================
 
 /**
- * 当月の名簿を走査し、今日以前の未入力セルに薄赤を設定してメール通知する
- * （入力済みセルの薄赤は解除する）
+ * 当月の名簿を走査し、今日以前の未入力セルに薄赤を設定する。
+ * メールは「前日（日本時間のカレンダー）のレギュラー枠で未入力の行」があるときのみ送る。
+ * @returns {boolean} 名簿ベースの未入力メールを送ったら true
  */
 function checkMissing() {
   var jst = getNowJST_();
   var ss  = getSpreadsheet_();
   var sheetName = getRosterSheetName_(jst.year, jst.month);
   var sheet = ss.getSheetByName(sheetName);
-  if (!sheet) return;
+  if (!sheet) return false;
 
   var students = sortStudents_(getStudentsForMonth_(jst.year, jst.month));
   var dates    = getLessonDates(jst.year, jst.month);
   var fc       = ROSTER.FIXED_COLS;
 
-  if (students.length === 0 || dates.length === 0) return;
+  if (students.length === 0 || dates.length === 0) return false;
 
-  var today = new Date();
+  var today = new Date(jst.year, jst.month - 1, jst.day);
   today.setHours(0, 0, 0, 0);
+  var yesterday = new Date(today.getTime());
+  yesterday.setDate(yesterday.getDate() - 1);
+  var yesterdayIso = formatDateIso_(yesterday);
 
   var numRows = students.length;
   var numCols = dates.length;
@@ -890,7 +894,8 @@ function checkMissing() {
         missingList.push({
           name: st.name,
           date: (dates[d].getMonth() + 1) + '/' + dates[d].getDate(),
-          day:  weekdayOfDate_(dates[d])
+          day:  weekdayOfDate_(dates[d]),
+          iso: formatDateIso_(dateOnly)
         });
       } else {
         // 出席・欠席・未来の空白 → 白
@@ -902,38 +907,52 @@ function checkMissing() {
 
   sheet.getRange(4, fc + 1, numRows, numCols).setBackgrounds(newBGs);
 
-  // メール通知
-  if (missingList.length > 0) {
+  // メールは「前日」の未入力のみ（当日以前の色付けは上で維持）
+  var mailTargets = missingList.filter(function(m) {
+    return m.iso === yesterdayIso;
+  });
+
+  var mailSent = false;
+  if (mailTargets.length > 0) {
     var email = String(getSetting_(CONFIG.SETTINGS_KEYS.ALERT_EMAIL, '') || '').trim();
     if (email) {
-      var lines = missingList.map(function(m) {
+      var lines = mailTargets.map(function(m) {
         return '  ・' + m.name + '  ' + m.date + '(' + m.day + '曜)';
       }).join('\n');
       var formUrl = getAttendanceFormUrl_();
       try {
         MailApp.sendEmail({
           to: email,
-          subject: '【育成クラス出欠名簿】未入力アラート ' + missingList.length + '件 (' +
-                   jst.year + '年' + jst.month + '月)',
-          body: '出欠未入力のレギュラー日があります。\n\n' + lines +
-                '\n\nスプレッドシートを開き、出欠を入力してください。\n' +
-                '（入力済みのものは翌日の自動チェックで解除されます）\n\n' +
-                '【育成クラス出欠フォーム（記入はこちら）】\n' +
-                formUrl +
-                '\n'
+          subject:
+            '【育成クラス出欠名簿】前日（' +
+            yesterdayIso +
+            '）の未入力 ' +
+            mailTargets.length +
+            '件',
+          body:
+            '前日（' +
+            yesterdayIso +
+            '）のレギュラー枠で、名簿上まだ出欠が未入力の行があります。\n\n' +
+            lines +
+            '\n\nスプレッドシートを開き、出欠を入力してください。\n' +
+            '（過去日の未入力は名簿で色表示されますが、メールは前日分のみです）\n\n' +
+            '【育成クラス出欠フォーム（記入はこちら）】\n' +
+            formUrl +
+            '\n'
         });
         var notifSh = ss.getSheetByName(CONFIG.SHEET.NOTIFICATIONS);
         if (notifSh) {
-          notifSh.appendRow([new Date(), '名簿_未入力アラート',
-            missingList.length + '件', 'SENT']);
+          notifSh.appendRow([new Date(), '名簿_未入力アラート（前日のみ）', mailTargets.length + '件', 'SENT']);
         }
+        mailSent = true;
       } catch (err) {
         Logger.log('checkMissing メール送信エラー: ' + err.message);
       }
     }
   }
 
-  Logger.log('未入力チェック完了: ' + missingList.length + '件');
+  Logger.log('未入力チェック完了: 全未入力 ' + missingList.length + '件 / 前日メール対象 ' + mailTargets.length + '件');
+  return mailSent;
 }
 
 // =============================================

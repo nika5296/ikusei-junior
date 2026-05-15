@@ -314,7 +314,7 @@ function installFormSubmitTrigger_() {
 }
 
 /**
- * 毎朝7時（東京）未入力チェック
+ * 毎朝9時（東京）フォーム未入力アラート（単体トリガー用・推奨は自動化一式）
  */
 function installDailyTrigger7am_() {
   var triggers = ScriptApp.getProjectTriggers();
@@ -323,6 +323,6 @@ function installDailyTrigger7am_() {
       ScriptApp.deleteTrigger(triggers[i]);
     }
   }
-  ScriptApp.newTrigger('dailyAttendanceAlert_').timeBased().atHour(7).everyDays(1).inTimezone(CONFIG.TIMEZONE).create();
-  SpreadsheetApp.getUi().alert('毎朝7時のトリガーを登録しました（' + CONFIG.TIMEZONE + '）。');
+  ScriptApp.newTrigger('dailyAttendanceAlert_').timeBased().atHour(9).everyDays(1).inTimezone(CONFIG.TIMEZONE).create();
+  SpreadsheetApp.getUi().alert('毎朝9時の「フォーム未入力アラート」トリガーを登録しました（' + CONFIG.TIMEZONE + '）。');
 }
